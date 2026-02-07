@@ -12,7 +12,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: radial-gradient(circle at center, #600000 0%, #200000 40%, #000000 100%);
+            background: radial-gradient(circle at center, #700000 0%, #200000 50%, #000000 100%);
             font-family: 'Roboto', sans-serif;
             color: white;
             user-select: none; 
@@ -20,23 +20,26 @@
 
         .grid-bg {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 250vw;
-            height: 250vw;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 0;
             background-image: 
-                linear-gradient(rgba(255, 50, 50, 0.4) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 50, 50, 0.4) 1px, transparent 1px);
+                linear-gradient(rgba(255, 100, 100, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 100, 100, 0.3) 1px, transparent 1px);
             background-size: 80px 80px;
-            transform-origin: center;
-            animation: rotateGrid 120s linear infinite;
+            animation: moveGrid 4s linear infinite;
             pointer-events: none;
         }
 
-        @keyframes rotateGrid {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        @keyframes moveGrid {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 80px -80px;
+            }
         }
 
         .content-wrapper {
@@ -58,7 +61,7 @@
             font-weight: 900;
             margin: 0;
             line-height: 1;
-            text-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+            text-shadow: 0 0 40px rgba(255, 0, 0, 0.8);
         }
 
         .title-sub {
@@ -68,8 +71,8 @@
             margin-top: -5px;
             margin-bottom: 20px;
             text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
-            background: rgba(0,0,0,0.3);
+            text-shadow: 0 0 15px rgba(255, 0, 0, 1);
+            background: rgba(0,0,0,0.4);
             padding: 5px 20px;
             border-radius: 50px;
             border: 1px solid rgba(255,0,0,0.3);
