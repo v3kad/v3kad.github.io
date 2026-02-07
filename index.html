@@ -3,31 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>GMod Loading Screen</title>
-    <!-- Подключаем шрифт Roboto -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;900&display=swap" rel="stylesheet">
     
     <style>
-        /* --- СТИЛИ --- */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #050505; /* Почти черный фон */
+            background-color: #000000;
             font-family: 'Roboto', sans-serif;
             color: white;
             user-select: none; 
         }
 
-        /* --- СЛОЙ 1: ФОНОВЫЕ КАРТИНКИ (Слайдшоу) --- */
         #bg-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -10; /* Самый нижний слой */
+            z-index: -3;
         }
 
         .bg-slide {
@@ -40,62 +37,45 @@
             background-position: center;
             opacity: 0;
             transition: opacity 1.5s ease-in-out;
-            filter: grayscale(80%) brightness(0.3); /* Делаем картинки тусклыми и чб, чтобы сетка выделялась */
+            filter: grayscale(100%) brightness(0.4); 
         }
 
         .bg-slide.active {
             opacity: 1;
         }
 
-        /* --- СЛОЙ 2: ВРАЩАЮЩАЯСЯ СЕТКА --- */
-        .grid-bg {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            /* Делаем сетку намного больше экрана, чтобы при повороте не было пустых углов */
-            width: 250vw; 
-            height: 250vw;
-            z-index: -5;
-            
-            /* Рисуем сетку градиентами */
-            background-image: 
-                linear-gradient(rgba(255, 30, 30, 0.4) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 30, 30, 0.4) 1px, transparent 1px);
-            
-            background-size: 80px 80px; /* Размер клетки */
-            
-            /* Центрируем и запускаем анимацию */
-            transform-origin: center;
-            animation: rotateGrid 120s linear infinite; /* 120s - скорость вращения (чем больше, тем медленнее) */
-        }
-
-        @keyframes rotateGrid {
-            0% {
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-            100% {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
-
-        /* --- СЛОЙ 3: ВИНЬЕТКА (Красный центр -> Черные края) --- */
         .vignette-layer {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Поверх сетки, но под текстом */
-            
-            /* Радиальный градиент: 
-               В центре: прозрачный красный (rgba(200, 0, 0, 0.15))
-               По краям: сплошной черный (rgba(0, 0, 0, 1)) 
-            */
-            background: radial-gradient(circle, rgba(255, 0, 0, 0.1) 10%, rgba(0, 0, 0, 0.9) 85%, #000 100%);
+            z-index: -2;
+            background: radial-gradient(circle, rgba(255, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.8) 60%, #000000 100%);
             pointer-events: none;
         }
 
-        /* --- СЛОЙ 4: КОНТЕНТ --- */
+        .grid-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 300vw;
+            height: 300vw;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(255, 0, 0, 0.7) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.7) 2px, transparent 2px);
+            background-size: 100px 100px;
+            transform-origin: center;
+            animation: rotateGrid 80s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotateGrid {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
         .content-wrapper {
             position: absolute;
             top: 0;
@@ -110,13 +90,12 @@
             text-align: center;
         }
 
-        /* Текстовые стили */
         .title-main {
-            font-size: 6rem;
+            font-size: 7rem;
             font-weight: 900;
             margin: 0;
             line-height: 1;
-            text-shadow: 0px 0px 20px rgba(255, 0, 0, 0.6); /* Красное свечение */
+            text-shadow: 4px 4px 0px #000, 0 0 20px rgba(255, 0, 0, 0.5);
         }
 
         .title-sub {
@@ -126,17 +105,19 @@
             margin-top: -5px;
             margin-bottom: 20px;
             text-transform: uppercase;
-            text-shadow: 0px 0px 10px rgba(255, 0, 0, 0.8);
+            text-shadow: 2px 2px 0px #000;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 15px;
+            border-radius: 5px;
         }
 
         .map-name {
             font-size: 2.5rem;
             font-weight: 900;
             margin-bottom: 40px;
-            text-shadow: 2px 2px 8px rgba(0,0,0,1);
+            text-shadow: 2px 2px 5px #000;
         }
 
-        /* Логи */
         .logs-container {
             width: 80%;
             max-width: 900px;
@@ -154,37 +135,27 @@
             text-overflow: ellipsis;
             max-width: 100%;
             margin-bottom: 5px;
-            transition: all 0.5s ease;
-            text-shadow: 1px 1px 3px rgba(0,0,0,1);
+            text-shadow: 1px 1px 2px #000;
         }
 
-        /* Анимация строк лога */
         .log-item:nth-child(1) {
             font-size: 1.5rem;
             color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
             transform: scale(1.05);
+            font-weight: 900;
         }
-        .log-item:nth-child(2) { font-size: 1.2rem; color: #dddddd; opacity: 0.7; }
-        .log-item:nth-child(3) { font-size: 1rem; color: #bbbbbb; opacity: 0.4; }
+        .log-item:nth-child(2) { font-size: 1.2rem; color: #dddddd; opacity: 0.8; }
+        .log-item:nth-child(3) { font-size: 1rem; color: #bbbbbb; opacity: 0.5; }
         .log-item:nth-child(n+4) { opacity: 0; height: 0; }
 
     </style>
 </head>
 <body>
 
-    <!-- 1. Фоновые картинки (скрыты за сеткой или затемнены) -->
-    <div id="bg-container">
-        <!-- Слайды генерируются JS -->
-    </div>
-
-    <!-- 2. Вращающаяся сетка -->
+    <div id="bg-container"></div>
+    <div class="vignette-layer"></div>
     <div class="grid-bg"></div>
 
-    <!-- 3. Виньетка (красный центр, черные края) -->
-    <div class="vignette-layer"></div>
-
-    <!-- 4. Текст и контент -->
     <div class="content-wrapper">
         <div class="title-main">Z-TYLE</div>
         <div class="title-sub">Fun & NoRules.</div>
@@ -195,22 +166,11 @@
     </div>
 
     <script>
-        // ==========================================
-        // НАСТРОЙКИ
-        // ==========================================
-        
-        // Можешь оставить одну картинку или убрать совсем, 
-        // так как сейчас главный акцент на сетке.
         const backgroundImages = [
             'https://cdn.discordapp.com/attachments/1434555097446223963/1468977267458707646/142120.jpg?ex=6985fb30&is=6984a9b0&hm=5f15eb839106787aa8ffc49d89cf0a4b6ce0cdd62d7ce5fb23eaf0da7de41c36&'
         ];
         const slideTime = 3000;
 
-        // ==========================================
-        // ЛОГИКА
-        // ==========================================
-
-        // Слайдшоу
         const bgContainer = document.getElementById('bg-container');
         let currentSlideIndex = 0;
 
@@ -233,18 +193,11 @@
         }
         setInterval(nextSlide, slideTime);
 
-        // GMod Hooks
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
             document.getElementById('map-display').innerText = mapname;
         }
-
-        function DownloadingFile(fileName) {
-            addLog("Downloading " + fileName);
-        }
-
-        function SetStatusChanged(status) {
-            addLog(status);
-        }
+        function DownloadingFile(fileName) { addLog("Downloading " + fileName); }
+        function SetStatusChanged(status) { addLog(status); }
 
         function addLog(text) {
             const container = document.getElementById('logs');
@@ -252,20 +205,14 @@
             div.className = 'log-item';
             div.innerText = text;
             container.prepend(div);
-            if (container.children.length > 5) {
-                container.removeChild(container.lastChild);
-            }
+            if (container.children.length > 5) container.removeChild(container.lastChild);
         }
 
-        // ТЕСТОВЫЙ РЕЖИМ (Если открыл в браузере)
         if (!navigator.userAgent.includes("Valve Source Client")) {
-            console.log("DEMO MODE");
             document.getElementById('map-display').innerText = "gm_construct";
-            let demoFiles = ["sound/weapons/shotgun/fire.wav", "models/player/combine_soldier.mdl", "lua/cl_init.lua"];
-            let demoIndex = 0;
+            let i = 0;
             setInterval(() => {
-                addLog("Downloading " + demoFiles[demoIndex % demoFiles.length]);
-                demoIndex++;
+                addLog("Загрузка файла: " + (i++));
             }, 800);
         }
     </script>
