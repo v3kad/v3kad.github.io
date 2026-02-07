@@ -12,47 +12,10 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #000000;
+            background-color: #050505;
             font-family: 'Roboto', sans-serif;
             color: white;
             user-select: none; 
-        }
-
-        #bg-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -3;
-        }
-
-        .bg-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-            filter: grayscale(100%) brightness(0.4); 
-        }
-
-        .bg-slide.active {
-            opacity: 1;
-        }
-
-        .vignette-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            background: radial-gradient(circle, rgba(255, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.8) 60%, #000000 100%);
-            pointer-events: none;
         }
 
         .grid-bg {
@@ -61,10 +24,10 @@
             left: 50%;
             width: 300vw;
             height: 300vw;
-            z-index: -1;
+            z-index: -2;
             background-image: 
-                linear-gradient(rgba(255, 0, 0, 0.7) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.7) 2px, transparent 2px);
+                linear-gradient(rgba(255, 0, 0, 0.5) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.5) 2px, transparent 2px);
             background-size: 100px 100px;
             transform-origin: center;
             animation: rotateGrid 80s linear infinite;
@@ -74,6 +37,17 @@
         @keyframes rotateGrid {
             0% { transform: translate(-50%, -50%) rotate(0deg); }
             100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .vignette-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, #000000 100%);
+            pointer-events: none;
         }
 
         .content-wrapper {
@@ -95,7 +69,7 @@
             font-weight: 900;
             margin: 0;
             line-height: 1;
-            text-shadow: 4px 4px 0px #000, 0 0 20px rgba(255, 0, 0, 0.5);
+            text-shadow: 4px 4px 0px #000, 0 0 30px rgba(255, 0, 0, 0.8);
         }
 
         .title-sub {
@@ -106,7 +80,7 @@
             margin-bottom: 20px;
             text-transform: uppercase;
             text-shadow: 2px 2px 0px #000;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             padding: 5px 15px;
             border-radius: 5px;
         }
@@ -152,9 +126,8 @@
 </head>
 <body>
 
-    <div id="bg-container"></div>
-    <div class="vignette-layer"></div>
     <div class="grid-bg"></div>
+    <div class="vignette-layer"></div>
 
     <div class="content-wrapper">
         <div class="title-main">Z-TYLE</div>
@@ -166,33 +139,6 @@
     </div>
 
     <script>
-        const backgroundImages = [
-            'https://cdn.discordapp.com/attachments/1434555097446223963/1468977267458707646/142120.jpg?ex=6985fb30&is=6984a9b0&hm=5f15eb839106787aa8ffc49d89cf0a4b6ce0cdd62d7ce5fb23eaf0da7de41c36&'
-        ];
-        const slideTime = 3000;
-
-        const bgContainer = document.getElementById('bg-container');
-        let currentSlideIndex = 0;
-
-        backgroundImages.forEach((url, index) => {
-            const div = document.createElement('div');
-            div.className = 'bg-slide';
-            div.style.backgroundImage = `url('${url}')`;
-            if(index === 0) div.classList.add('active');
-            bgContainer.insertBefore(div, bgContainer.firstChild);
-        });
-
-        const slides = document.querySelectorAll('.bg-slide');
-
-        function nextSlide() {
-            if (slides.length > 1) {
-                slides[currentSlideIndex].classList.remove('active');
-                currentSlideIndex = (currentSlideIndex + 1) % slides.length;
-                slides[currentSlideIndex].classList.add('active');
-            }
-        }
-        setInterval(nextSlide, slideTime);
-
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
             document.getElementById('map-display').innerText = mapname;
         }
