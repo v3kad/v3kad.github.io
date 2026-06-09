@@ -90,12 +90,27 @@
             line-height: 1.2;
         }
 
-        #downloads {
+        #status {
             position: fixed;
             top: 30%;
             left: 0;
             right: 0;
             margin-top: 80px;
+            z-index: 2;
+            text-align: center;
+            color: #ffffff;
+            font-size: 16px;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+            padding: 0 20px;
+            pointer-events: none;
+        }
+
+        #history {
+            position: fixed;
+            top: 30%;
+            left: 0;
+            right: 0;
+            margin-top: 110px;
             z-index: 2;
             display: flex;
             flex-direction: column;
@@ -105,7 +120,7 @@
             pointer-events: none;
         }
 
-        #downloads .dl-item {
+        #history .log {
             font-size: 15px;
             color: #ffffff;
             text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
@@ -127,11 +142,12 @@
         <div id="map-name">gm_huy</div>
     </div>
 
-    <div id="downloads"></div>
+    <div id="status">Подключение...</div>
+    <div id="history"></div>
 
     <script>
         var SLIDE_DURATION = 7000;
-        var MAX_DOWNLOAD_ITEMS = 10;
+        var MAX_HISTORY_ITEMS = 10;
 
         var slideshowContainer = document.getElementById('slideshow');
         var currentSlideIndex = 0;
@@ -139,10 +155,10 @@
 
         var serverNameEl = document.getElementById('server-name');
         var mapNameEl = document.getElementById('map-name');
-        var downloadsEl = document.getElementById('downloads');
+        var statusEl = document.getElementById('status');
+        var historyEl = document.getElementById('history');
 
-        var downloadedFiles = [];
-        var gmodDetected = false;
+        var history = [];
 
         function loadImages() {
             fetch('images.json?v=' + Date.now())
@@ -195,79 +211,51 @@
             slides[currentSlideIndex].classList.add('active');
         }
 
-        function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
-            gmodDetected = true;
-            downloadedFiles = [];
-            renderDownloadList();
-            serverNameEl.textContent = servername || 'Сервер';
-            mapNameEl.textContent = mapname || '';
+        function addHistory(msg) {
+            if (!msg) return;
+            history.unshift(msg);
+            if (history.length > MAX_HISTORY_ITEMS) {
+                history = history.slice(0, MAX_HISTORY_ITEMS);
+            }
+            renderHistory();
         }
 
-        function SetFilesTotal(total) { gmodDetected = true; }
-        function SetFilesNeeded(needed) { gmodDetected = true; }
-        function SetStatusChanged(status) { gmodDetected = true; }
+        function renderHistory() {
+            historyEl.innerHTML = '';
+            for (var i = 0; i < history.length; i++) {
+                var div = document.createElement('div');
+                div.className = 'log';
+                var opacity = 1 - (i / MAX_HISTORY_ITEMS) * 0.95;
+                div.style.opacity = Math.max(opacity, 0.05);
+                var name = history[i];
+                if (name.length > 90) name = '...' + name.slice(-87);
+                div.textContent = name;
+                historyEl.appendChild(div);
+            }
+        }
 
-        function DownloadingFile(fileName) {
-            gmodDetected = true;
+        window.GameDetails = function (servername, serverurl, mapname, maxplayers, steamid, gamemode) {
+            serverNameEl.textContent = servername || 'Сервер';
+            mapNameEl.textContent = mapname || '';
+        };
+
+        window.SetFilesTotal = function (total) {};
+        window.SetFilesNeeded = function (needed) {};
+
+        window.DownloadingFile = function (fileName) {
             if (fileName.charAt(0) === '"' || fileName.charAt(0) === "'") {
                 fileName = fileName.substring(1, fileName.length - 1);
             }
-            downloadedFiles.unshift(fileName);
-            if (downloadedFiles.length > MAX_DOWNLOAD_ITEMS) {
-                downloadedFiles = downloadedFiles.slice(0, MAX_DOWNLOAD_ITEMS);
-            }
-            renderDownloadList();
-        }
+            addHistory(statusEl.textContent);
+            statusEl.textContent = 'Downloading ' + fileName;
+        };
 
-        function renderDownloadList() {
-            downloadsEl.innerHTML = '';
-            for (var i = 0; i < downloadedFiles.length; i++) {
-                var div = document.createElement('div');
-                div.className = 'dl-item';
-                var opacity = 1 - (i / MAX_DOWNLOAD_ITEMS) * 0.95;
-                div.style.opacity = Math.max(opacity, 0.05);
-                var name = downloadedFiles[i];
-                if (name.length > 90) name = '...' + name.slice(-87);
-                div.textContent = name;
-                downloadsEl.appendChild(div);
-            }
-        }
+        window.SetStatusChanged = function (status) {
+            addHistory(statusEl.textContent);
+            statusEl.textContent = status;
+        };
 
         loadImages();
-
-        setTimeout(function () {
-            if (gmodDetected) return;
-
-            var demoFiles = [
-                'models/player/soldier.mdl',
-                'materials/effects/spark.vmt',
-                'sound/weapons/ak47/ak47_fire.wav',
-                'lua/autorun/server/admin_init.lua',
-                'models/props_c17/oildrum001.mdl',
-                'materials/models/player/ct_urban.vtf',
-                'sound/ambient/wind1.wav',
-                'lua/weapons/weapon_base/shared.lua',
-                'models/vehicles/car001.mdl',
-                'materials/skybox/sky_day02_01.vtf',
-                'sound/npc/zombie/zombie_die1.wav',
-                'lua/entities/npc_base/init.lua',
-                'models/props_junk/cardboard_box001a.mdl',
-                'materials/effects/blood_core.vmt',
-                'sound/ui/buttonclick.wav',
-                'models/weapons/v_pistol.mdl',
-                'materials/vgui/logo.vmt',
-                'sound/music/menu_theme.mp3',
-                'lua/derma/init.lua',
-                'models/props_lab/monitor01a.mdl'
-            ];
-
-            var idx = 0;
-            setInterval(function () {
-                if (gmodDetected) return;
-                DownloadingFile(demoFiles[idx % demoFiles.length]);
-                idx++;
-            }, 700);
-        }, 3000);
     </script>
 </body>
 </html>
