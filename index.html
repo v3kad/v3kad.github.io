@@ -61,7 +61,7 @@
 
         #header {
             position: fixed;
-            top: 20%;
+            top: 30%;
             left: 0;
             right: 0;
             transform: translateY(-50%);
@@ -92,7 +92,7 @@
 
         #downloads {
             position: fixed;
-            top: 20%;
+            top: 30%;
             left: 0;
             right: 0;
             margin-top: 80px;
@@ -142,6 +142,7 @@
         var downloadsEl = document.getElementById('downloads');
 
         var downloadedFiles = [];
+        var gmodDetected = false;
 
         function loadImages() {
             fetch('images.json?v=' + Date.now())
@@ -195,15 +196,19 @@
         }
 
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
+            gmodDetected = true;
+            downloadedFiles = [];
+            renderDownloadList();
             serverNameEl.textContent = servername || 'Сервер';
             mapNameEl.textContent = mapname || '';
         }
 
-        function SetFilesTotal(total) {}
-        function SetFilesNeeded(needed) {}
-        function SetStatusChanged(status) {}
+        function SetFilesTotal(total) { gmodDetected = true; }
+        function SetFilesNeeded(needed) { gmodDetected = true; }
+        function SetStatusChanged(status) { gmodDetected = true; }
 
         function DownloadingFile(fileName) {
+            gmodDetected = true;
             if (fileName.charAt(0) === '"' || fileName.charAt(0) === "'") {
                 fileName = fileName.substring(1, fileName.length - 1);
             }
@@ -230,10 +235,9 @@
 
         loadImages();
 
-        var isGmod = false;
-        try { if (typeof GameDetails !== 'undefined' && window.parent !== window) isGmod = true; } catch(e) {}
+        setTimeout(function () {
+            if (gmodDetected) return;
 
-        if (!isGmod) {
             var demoFiles = [
                 'models/player/soldier.mdl',
                 'materials/effects/spark.vmt',
@@ -259,10 +263,11 @@
 
             var idx = 0;
             setInterval(function () {
+                if (gmodDetected) return;
                 DownloadingFile(demoFiles[idx % demoFiles.length]);
                 idx++;
             }, 700);
-        }
+        }, 3000);
     </script>
 </body>
 </html>
