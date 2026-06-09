@@ -2,181 +2,272 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>GMod Loading Screen</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;900&display=swap" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Screen</title>
     <style>
-        body, html {
+        * {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: radial-gradient(circle at center, #700000 0%, #200000 50%, #000000 100%);
-            font-family: 'Roboto', sans-serif;
-            color: white;
-            user-select: none; 
+            box-sizing: border-box;
         }
 
-        .grid-bg {
+        body {
+            overflow: hidden;
+            background: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #slideshow {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 0;
-            background-image: 
-                linear-gradient(rgba(255, 100, 100, 0.3) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 100, 100, 0.3) 1px, transparent 1px);
-            background-size: 80px 80px;
-            animation: moveGrid 4s linear infinite;
-            pointer-events: none;
         }
 
-        @keyframes moveGrid {
-            0% {
-                background-position: 0 0;
-            }
-            100% {
-                background-position: 80px -80px;
-            }
-        }
-
-        .content-wrapper {
+        #slideshow .slide {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        .title-main {
-            font-size: 7rem;
-            font-weight: 900;
-            margin: 0;
-            line-height: 1;
-            text-shadow: 0 0 40px rgba(255, 0, 0, 0.8);
+        #slideshow .slide.active {
+            opacity: 1;
         }
 
-        .title-sub {
-            font-size: 2rem;
-            font-weight: 900;
-            color: #ff4444;
-            margin-top: -5px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(255, 0, 0, 1);
-            background: rgba(0,0,0,0.4);
-            padding: 5px 20px;
-            border-radius: 50px;
-            border: 1px solid rgba(255,0,0,0.3);
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1;
         }
 
-        .map-name {
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin-bottom: 50px;
-            text-shadow: 2px 2px 10px black;
-        }
-
-        .logs-container {
-            width: 80%;
-            max-width: 900px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 160px;
-            overflow: hidden;
+        #content {
             position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            color: #fff;
         }
 
-        .log-item {
-            font-weight: 500;
+        #server-name {
+            font-size: 48px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.8);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        #map-name {
+            font-size: 30px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+            margin-bottom: 30px;
+        }
+
+        #downloads {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            max-width: 700px;
+        }
+
+        #downloads .dl-item {
+            font-size: 14px;
+            color: #ffffff;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.7);
+            transition: opacity 0.3s ease;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 100%;
-            margin-bottom: 8px;
-            text-shadow: 1px 1px 4px black;
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            position: relative;
+            max-width: 700px;
         }
 
-        .log-item:nth-child(1) {
-            font-size: 1.6rem;
-            color: #ffffff;
-            transform: translateY(0) scale(1.05);
-            opacity: 1;
-            text-shadow: 0 0 15px rgba(255, 50, 50, 0.8);
+        #progress-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            max-width: 600px;
+            z-index: 2;
         }
 
-        .log-item:nth-child(2) {
-            font-size: 1.2rem;
-            color: #cccccc;
-            transform: translateY(5px) scale(1);
-            opacity: 0.7;
+        #progress-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            margin-bottom: 6px;
+            text-align: center;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.7);
         }
 
-        .log-item:nth-child(3) {
-            font-size: 1rem;
-            color: #999999;
-            transform: translateY(10px) scale(0.95);
-            opacity: 0.4;
+        #progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+            overflow: hidden;
         }
 
-        .log-item:nth-child(n+4) {
-            font-size: 0.8rem;
-            opacity: 0;
-            transform: translateY(20px) scale(0.9);
-            height: 0;
-            margin: 0;
+        #progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 3px;
+            transition: width 0.4s ease;
         }
-
     </style>
 </head>
 <body>
 
-    <div class="grid-bg"></div>
+    <div id="slideshow"></div>
+    <div id="overlay"></div>
 
-    <div class="content-wrapper">
-        <div class="title-main">ZMayhem</div>
-        <div class="title-sub">Наш дискорд: https://discord.gg/mZRCJUbaA3</div>
-        
-        <div class="map-name" id="map-display">Загрузка...</div>
+    <div id="content">
+        <div id="server-name">Загрузка...</div>
+        <div id="map-name"></div>
+        <div id="downloads"></div>
+    </div>
 
-        <div class="logs-container" id="logs"></div>
+    <div id="progress-container">
+        <div id="progress-text"></div>
+        <div id="progress-bar-bg">
+            <div id="progress-bar-fill"></div>
+        </div>
     </div>
 
     <script>
+        var SLIDE_DURATION = 2000;
+        var MAX_DOWNLOAD_ITEMS = 10;
+
+        var slideshowContainer = document.getElementById('slideshow');
+        var currentSlideIndex = 0;
+        var slides = [];
+
+        var serverNameEl = document.getElementById('server-name');
+        var mapNameEl = document.getElementById('map-name');
+        var downloadsEl = document.getElementById('downloads');
+        var progressText = document.getElementById('progress-text');
+        var progressBarFill = document.getElementById('progress-bar-fill');
+
+        var downloadedFiles = [];
+        var totalFiles = 0;
+        var filesDownloaded = 0;
+
+        function loadImages() {
+            fetch('images.json')
+                .then(function (response) { return response.json(); })
+                .then(function (images) { initSlideshow(images); })
+                .catch(function (err) { console.error('Ошибка загрузки images.json:', err); });
+        }
+
+        function initSlideshow(images) {
+            if (!images || images.length === 0) return;
+
+            for (var i = 0; i < images.length; i++) {
+                var div = document.createElement('div');
+                div.className = 'slide';
+
+                var ext = images[i].split('.').pop().toLowerCase();
+                if (ext === 'gif') {
+                    var img = document.createElement('img');
+                    img.src = images[i];
+                    img.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;';
+                    div.appendChild(img);
+                } else {
+                    div.style.backgroundImage = 'url("' + images[i] + '")';
+                }
+
+                if (i === 0) {
+                    div.classList.add('active');
+                }
+
+                slideshowContainer.appendChild(div);
+                slides.push(div);
+            }
+
+            if (slides.length > 1) {
+                setInterval(nextSlide, SLIDE_DURATION);
+            }
+        }
+
+        function nextSlide() {
+            if (slides.length === 0) return;
+            slides[currentSlideIndex].classList.remove('active');
+            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+            slides[currentSlideIndex].classList.add('active');
+        }
+
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
-            document.getElementById('map-display').innerText = mapname;
-        }
-        function DownloadingFile(fileName) { addLog("Downloading " + fileName); }
-        function SetStatusChanged(status) { addLog(status); }
-
-        function addLog(text) {
-            const container = document.getElementById('logs');
-            const div = document.createElement('div');
-            div.className = 'log-item';
-            div.innerText = text;
-            container.prepend(div);
-            if (container.children.length > 5) container.removeChild(container.lastChild);
+            serverNameEl.textContent = servername || 'Сервер';
+            mapNameEl.textContent = mapname || '';
         }
 
-        if (!navigator.userAgent.includes("Valve Source Client")) {
-            document.getElementById('map-display').innerText = "gm_construct";
-            let i = 0;
-            setInterval(() => {
-                addLog("Загрузка файла: materials/models/props/test_file_" + i + ".vtf");
-                i++;
-            }, 600);
+        function SetFilesTotal(total) {
+            totalFiles = total;
         }
+
+        function SetFilesNeeded(needed) {
+            filesDownloaded = totalFiles - needed;
+            updateProgress();
+        }
+
+        function DownloadingFile(fileName) {
+            downloadedFiles.unshift(fileName);
+            if (downloadedFiles.length > MAX_DOWNLOAD_ITEMS) {
+                downloadedFiles = downloadedFiles.slice(0, MAX_DOWNLOAD_ITEMS);
+            }
+            renderDownloadList();
+        }
+
+        function SetStatusChanged(status) {
+            progressText.textContent = status;
+        }
+
+        function updateProgress() {
+            if (totalFiles > 0) {
+                var percent = Math.min((filesDownloaded / totalFiles) * 100, 100);
+                progressBarFill.style.width = percent + '%';
+                progressText.textContent = filesDownloaded + ' / ' + totalFiles;
+            }
+        }
+
+        function renderDownloadList() {
+            downloadsEl.innerHTML = '';
+            for (var i = 0; i < downloadedFiles.length; i++) {
+                var div = document.createElement('div');
+                div.className = 'dl-item';
+                var opacity = 1 - (i / MAX_DOWNLOAD_ITEMS) * 0.9;
+                div.style.opacity = Math.max(opacity, 0.1);
+                var name = downloadedFiles[i];
+                if (name.length > 80) name = '...' + name.slice(-77);
+                div.textContent = name;
+                downloadsEl.appendChild(div);
+            }
+        }
+
+        loadImages();
     </script>
 </body>
 </html>
